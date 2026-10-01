@@ -4,7 +4,7 @@ const initialState = {
     todos: [{ id: 1, text: "Hello world" }]
 }
 
-export const todoSlice = createSlice({
+export const todoStore = createSlice({
     name: 'todo',
     initialState,
     reducers: {
@@ -16,18 +16,18 @@ export const todoSlice = createSlice({
             state.todos.push(todo)
         },
         removeTodo: (state, action) => {
-            state.todos = state.todos.filter((todo) => {
-                todo.id !== action.payload
-            })
+            state.todos = state.todos.filter((todo) => todo.id !== action.payload)
         },
-        // updateTodo: (state, action) => {
-        //     state.todos = state.todos.find((todo) => {
-        //         todo.id !== action.payload
-        //     })
-        // }
+        updateTodo: (state, action) => {
+            const { id, text } = action.payload
+            const todo = state.todos.find((t) => String(t.id) === String(id))
+            if (todo) {
+                todo.text = text
+            }
+        }
     }
 })
 
-export const { addTodo, removeTodo } = todoSlice.actions
+export const { addTodo, removeTodo, updateTodo } = todoStore.actions
 
-export default todoSlice.reducer
+export default todoStore.reducer
