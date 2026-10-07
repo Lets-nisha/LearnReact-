@@ -58,7 +58,7 @@ export class Service {
 
     async deletePost(slug) {
         try {
-            return await this.databases.deleteDocument(
+            await this.databases.deleteDocument(
                 conf.DatabaseId,
                 conf.CollectionId,
                 slug
@@ -74,7 +74,7 @@ export class Service {
 
     async getPost(slug) {
         try {
-            return await this.databases.getDocument(
+            await this.databases.getDocument(
                 conf.DatabaseId,
                 conf.CollectionId,
                 slug
@@ -86,7 +86,58 @@ export class Service {
         }
     }
 
-    async getPosts() {}
+    async getPosts(queries = [Query.equal("status", "active")]) {
+        try {
+            return await this.databases.listDocuments(
+                conf.appWriteDatabaseId,
+                conf.appWriteCollectionId,
+                queries,
+
+            )
+
+        } catch (err) {
+            console.log("Error in getPosts", err)
+            return false
+        }
+    }
+
+    // upload services
+
+    async uploadFile(file) {
+        try {
+            return await this.bucket.createFile(
+                conf.appWriteBucketId,
+                ID.unique(),
+                file
+            )
+        } catch (err) {
+            console.log("Error in uploadFile", err)
+            return false
+        }
+    }
+
+    async deleteFile(fileId) {
+        try {
+            this.bucket.deleteFile(
+                conf.appWriteBucketId,
+                fileId
+            )
+            return true
+
+        } catch (err) {
+            console.log("Error in deleteFile", err)
+            return false
+        }
+    }
+
+    getFilePreviewUrl(fileId) {
+        return this.bucket.getFilePreview(
+            conf.appWriteBucketId,
+            fileId
+        );
+    }
+
+
 }
 
 const service = new Service();
